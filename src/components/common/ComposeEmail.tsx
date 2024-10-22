@@ -86,7 +86,7 @@ const ComposeEmail: React.FC<ComposeEmailProps> = ({
 
   const bodyHtml = body.replace(/<\/?body>/g, "").trim(); // Remove any existing <body> or </body> tags from the content
   const finalHtmlBody = `<body>\n${bodyHtml}\n</body>`;  
-  const handleSend = async () => {
+ const handleSend = async () => {
     const formData = new FormData();
     formData.append("from", from);
     formData.append("to", to.join(','));
@@ -96,9 +96,9 @@ const ComposeEmail: React.FC<ComposeEmailProps> = ({
     formData.append("html", finalHtmlBody);
     formData.append("text", plainTextBody);
     formData.append("template_id", templateId);
-
+  
     console.log("Attached Files:", attachedFiles);
-
+  
     attachedFiles.slice(0, 5).forEach((file) => {
       if (file instanceof File) {
         formData.append("files", file);
@@ -106,26 +106,30 @@ const ComposeEmail: React.FC<ComposeEmailProps> = ({
         console.error("Item is not a valid File:", file);
       }
     });
-
+  
     try {
-      const response = await axios.post(API_URL.POST_NEW_EMAIL,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            
-          },
-          withCredentials: true,
-        }
-      );
-
-      console.log("Response:", response.data);
+      const response = await fetch(API_URL.POST_NEW_EMAIL, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+        credentials: 'include', 
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const data = await response.json();
+      console.log("Response:", data);
       handleClose();
     } catch (error) {
       console.error("Error sending email:", error);
       alert("Failed to send email");
     }
   };
+
 
 
   const handleDiscard = () => {
