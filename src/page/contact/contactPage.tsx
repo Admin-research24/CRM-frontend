@@ -16,7 +16,7 @@ import Pagination from "../../components/common/Pagination";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../components/ui/ui/command";
 import FilterPage from "../../components/common/filterPage";
 import { debounce } from "@mui/material";
-import {  getContactColumns } from "./column";
+import { getContactColumns } from "./column";
 import ComposeBulkEmail from "../../components/common/BulkComposeEmail";
 
 export default function ContactPage() {
@@ -58,7 +58,7 @@ export default function ContactPage() {
     });
   };
   // Effect to manage checkbox selection inside the table
- 
+
 
 
   const { onDownload } = useDownloadExcel({
@@ -188,7 +188,7 @@ export default function ContactPage() {
                 initialTo={selectedEmails.join(", ")}
               />
 
-              
+
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

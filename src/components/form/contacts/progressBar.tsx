@@ -226,6 +226,7 @@ export default function ProgressBar() {
       };
 
       await dispatch(importContactFieldAsync(data)).then((response) => {
+        toast.success("Contact Import Successfully");
         const svgElement = document.querySelector(".lucide-x");
         const closeModalButton = svgElement ? svgElement.closest('button') : null;
 

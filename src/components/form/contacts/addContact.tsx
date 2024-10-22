@@ -26,6 +26,7 @@ import {
   // getContactListAsync,
 } from "../../../store/slices/contact";
 import { useAppDispatch } from "../../../store/Hooks";
+import { toast } from "react-toastify";
 
 export const AddContact = () => {
   const dispatch = useAppDispatch();
@@ -71,6 +72,7 @@ export const AddContact = () => {
 
     dispatch(createContactAsync(formData)).then(() => {
       const closeModalButton = document.getElementById("close-modal");
+      toast.success("Contact added successfully");
       if (closeModalButton) {
         closeModalButton.click();
       }
