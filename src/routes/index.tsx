@@ -17,10 +17,12 @@ import ImportHistoryPage from "../components/form/settingForm/importHistoryPage"
 import SalesSequences from "../page/Conversation/Sequences/Sequences";
 import OtherMailForm from "../components/form/Email/otherMailForm";
 import AddSignatureFrom from "../components/form/settingForm/addSignatureFrom";
+import SentMailPage from "../page/sentEmail/sentMailPage";
 
 const App = loadable(() => import("../container/App"));
 const Dashboard = loadable(() => import("../page/dashboard/dashboard"));
 const LoginPage = loadable(() => import("../page/LoginPage"));
+const RegisterPage = loadable(() => import("../page/RegisterPage"));
 
 const AdminLoggedIn = () => !!localStorage.getItem("cmsToken");
 
@@ -69,6 +71,14 @@ const AppRoutes = () => {
                 }
             />
             <Route
+                path="register"
+                element={
+                    <ProtectedRoute check={!AdminLoggedIn()} to="/dashboard">
+                        <RegisterPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
                 element={
                     <ProtectedRoute check={AdminLoggedIn()}>
                         <App />
@@ -78,6 +88,7 @@ const AppRoutes = () => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/company" element={<CompanyPage />} />
+                <Route path="/sent-logs" element={<SentMailPage />} />
                 <Route element={<SettingsPage />}>
                     <Route path="/leads-contact" element={<LeadsContactPage />} />
                     <Route path="/deals-pipelines" element={<DealsPipelinePage />} />

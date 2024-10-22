@@ -1,5 +1,5 @@
 import { ContactEmergencyOutlined, EmailOutlined } from "@mui/icons-material";
-import { Building2Icon, LayoutDashboard, Settings } from "lucide-react";
+import { Building2Icon, LayoutDashboard, Send, Settings } from "lucide-react";
 
 export const DOMAIN = import.meta.env.VITE_SERVER_DOMAIN + "/api";
 export const DOMAIN2 = import.meta.env.VITE_SERVER_DOMAIN2 + "/api";
@@ -9,6 +9,7 @@ export const token = import.meta.env.VITE_ACCESS_TOKEN;
 
 export const API_URL = {
   // GET_ADMING_LOGIN: `${DOMAIN2}/login-admin`,
+  POST_REGISTER_USER: `${DOMAIN2}/registerV3`,
   GET_ADMING_LOGIN: `${DOMAIN2}/loginV3`,
 
   GET_CONTACT_API:(page: number, limit:number, search: string)=> `${DOMAIN2}/contact/get-all-contacts?page=${page}&limit=${limit}&search=${search}`,
@@ -68,6 +69,11 @@ export const leftSideBarLinks = [
     label: "Email",
     to: "/conversation",
     icon: <EmailOutlined />,
+  },
+  {
+    label:"sent Logs",
+    to:"/sent-logs",
+    icon:<Send />
   },
   {
     label: "Settings",
