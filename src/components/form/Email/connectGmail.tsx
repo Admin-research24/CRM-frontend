@@ -20,7 +20,7 @@ export default function ConnectGmail() {
     const handleConnect = () => {
 
 
-        const response = window.open("http://localhost:5000/auth/google", "_self")
+        const response = window.open("https://crm-backend-1ve2.onrender.com/auth/google", "_self")
         // dispatch(getConnectMailAsync());
 
         console.log(response)
