@@ -154,6 +154,28 @@ export function getAllSentMail() {
   });
 }
 
+// AllSent Email Fetch
+export function getAllSentLogMail() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get(API_URL.GET_SENT_MAIL_API, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+
+      });
+
+      resolve({ data: response.data });
+    } catch (error: any) {
+      if (error.response) {
+        reject(error.response.data);
+      } else {
+        reject(error);
+      }
+    }
+  });
+}
+
 // SPAM
 export function getAllSpamMail() {
   return new Promise(async (resolve, reject) => {

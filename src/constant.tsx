@@ -19,7 +19,7 @@ export const API_URL = {
   EXCEL_UPLOAD_CONTACT_API: `${DOMAIN2}/data/upload`,
   CRM_FIELD_API: `${DOMAIN2}/crm/get/limited-data`,
   IMPORT_CONTACT_FIELD_API: `${DOMAIN2}/data/upload/submit`,
-
+  
   // Email
   GET_CONNECT_MAIL: `${DOMAIN3}/auth/google`,
   GET_FETCH_EMAIL: `${DOMAIN2}/email/fetchEmail`,
@@ -30,6 +30,7 @@ export const API_URL = {
   GET_INBOX_MAIL: `${DOMAIN2}/inbox`,
   GET_DRAFT_MAIL: `${DOMAIN2}/drafts`,
   GET_SENT_MAIL: `${DOMAIN2}/sent`,
+  GET_SENT_MAIL_API: `${DOMAIN2}/sentemail`,
   GET_SPAM_MAIL: `${DOMAIN2}/spam`,
   GET_ALL_MAIL: `${DOMAIN2}/allMail`,
   GET_BIN_MAIL: `${DOMAIN2}/bin`,

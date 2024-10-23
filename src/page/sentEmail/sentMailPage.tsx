@@ -1,38 +1,56 @@
 import { File, Search } from "lucide-react";
 import { Button } from "../../components/ui/ui/button";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import DataTable from "../../components/common/DataTable";
 import { getSentLogColumns } from "./column";
-import { Contact } from "../../store/slices/contact";
+import { useAppDispatch, useAppSelector } from "../../store/Hooks";
+import { Email, getAllSentLogMailAsync, selectAllSentLogList } from "../../store/slices/email";
 
 export default function SentMailPage() {
     const [compact, setCompact] = useState(false);
     const tableRef = useRef<null>(null);
     const [selectedContacts, setSelectedContacts] = useState<{ id: string; email: string }[]>([]);
+    const sentMailList = useAppSelector(selectAllSentLogList) || [];
+    const dispatch = useAppDispatch();
 
     const { onDownload } = useDownloadExcel({
         currentTableRef: tableRef.current,
         filename: 'send-logs',
         sheet: 'data',
     });
-    const handleRowSelect = (row: Contact) => {
+    const handleRowSelect = (row: Email) => {
         setSelectedContacts((prev) => {
             const isAlreadySelected = prev.some((contact) => contact.id === row._id);
+
             if (isAlreadySelected) {
                 return prev.filter((contact) => contact.id !== row._id);
             } else {
-                return [...prev, { id: row._id, email: row.email }];
+                let emailToAdd = '';
+
+                if (Array.isArray(row.to)) {
+                    emailToAdd = row.to.length > 0 ? row.to[0].email : '';
+                } else if (typeof row.to === 'object' && row.to) {
+                    emailToAdd = row.to.value[0].address;
+                } else {
+                    emailToAdd = row.to as unknown as string;
+                }
+
+                return [...prev, { id: row._id, email: emailToAdd }];
             }
         });
     };
 
     const sentLogColumn = getSentLogColumns(handleRowSelect);
 
+    useEffect(() => {
+        dispatch(getAllSentLogMailAsync());
+    }, [dispatch])
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className="flex items-center gap-16">
-                <h1 className="text-3xl font-bold text-indigo-950 mb-4">Sent Mail()</h1>
+                <h1 className="text-3xl font-bold text-indigo-950 mb-4">Sent Mails({sentMailList.length})</h1>
                 <div className="flex justify-end gap-3">
                     <div className="flex items-center border border-input bg-background rounded ring-offset-background">
                         <Search className="ml-5 text-gray-500" />
@@ -56,13 +74,18 @@ export default function SentMailPage() {
                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Export</span>
                     </Button>
                 </div>
-                {selectedContacts && (
-                    <div className="flex justify-center items-center h-48">
-                        <h1 className="text-3xl font-bold text-indigo-950 mb-4">Select Contact</h1>
-                    </div>
-                )
+                <div className="overflow-scroll h-screen">
+
+                    <DataTable tableRef={tableRef} columns={sentLogColumn} data={sentMailList} compact={compact} />
+                </div>
+                {
+                    selectedContacts && (
+                        <div>
+                            {sentMailList.length}
+                        </div>
+
+                    )
                 }
-                <DataTable tableRef={tableRef} columns={sentLogColumn} data={[]} compact={compact} />
 
             </div>
         </div>

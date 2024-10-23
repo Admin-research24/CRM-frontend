@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getAllAutoReplyMail, getAllBinMail, getAllBounceMail, getAllDraftMail, getAllImportantMail, getAllInboxMail, getAllMail, getAllReplyMail, getAllSentMail, getAllSpamMail, getAllStarredMail, getConnectMail, getFetchEMail, PostNewEmail } from "../api/email";
+import { getAllAutoReplyMail, getAllBinMail, getAllBounceMail, getAllDraftMail, getAllImportantMail, getAllInboxMail, getAllMail, getAllReplyMail, getAllSentLogMail, getAllSentMail, getAllSpamMail, getAllStarredMail, getConnectMail, getFetchEMail, PostNewEmail } from "../api/email";
 import { RootState } from "..";
 
 export interface Email {
@@ -22,7 +22,26 @@ export interface Email {
     priority: string;
     createdAt: string;
     updatedAt: string;
+    delivery_status: DeliveryStatus[];
 }
+interface DeliveryStatus {
+    sent: {
+      value: number | null;
+      sentAt: string | null;
+    };
+    opened: {
+      value: number | null;
+      openedAt: string | null;
+    };
+    clicked: {
+      value: number | null;
+      clickedAt: string | null;
+    };
+    unsubscribed: {
+      value: number | null;
+      unsubscribedAt: string | null;
+    };
+  }
 export interface Draft {
     _id: string;
     user_id: string;
@@ -131,6 +150,7 @@ export interface EmailState {
     allAutoReplyMailList: Email[];
     allReplyMailList: Email[];
     allBounceMailList: Email[];
+    allSentLogList:Email[];
     totalInboxGiven: number;
     isInboxLoading: boolean;
     isDraftLoading: boolean;
@@ -144,7 +164,9 @@ export interface EmailState {
     isAutoReplyLoading:boolean;
     isReplayLoading:boolean;
     isBounceLoading:boolean;
+    isSentMailLogLoading:boolean;
     inboxMessage: string;
+    
 
 }
 
@@ -160,6 +182,7 @@ const initialState: EmailState = {
     allAutoReplyMailList: [],
     allReplyMailList: [],
     allBounceMailList: [],
+    allSentLogList: [],
     totalInboxGiven: 0,
     isInboxLoading: false,
     isDraftLoading: false,
@@ -173,6 +196,7 @@ const initialState: EmailState = {
     isAutoReplyLoading:false,
     isReplayLoading:false,
     isBounceLoading:false,
+    isSentMailLogLoading:false,
     inboxMessage: '',
 }
 
@@ -223,6 +247,13 @@ export const getAllSentMailAsync = createAsyncThunk(
         return res.data;
     },
 );
+export const getAllSentLogMailAsync = createAsyncThunk(
+    'mail/sentLogMail',
+    async () => {
+        const res: any = await getAllSentLogMail();
+        return res.data;
+    },
+);
 
 export const getAllSpamMailAsync = createAsyncThunk(
     'mail/spamMail',
@@ -231,6 +262,7 @@ export const getAllSpamMailAsync = createAsyncThunk(
         return res.data;
     },
 );
+
 
 export const getAllMailAsync = createAsyncThunk(
     'mail/allMail',
@@ -344,6 +376,20 @@ const EmailSlice = createSlice({
             .addCase(getAllSentMailAsync.rejected, state => {
                 state.isSentLoading = false;
             })
+            .addCase(getAllSentLogMailAsync.pending, state => {
+                state.isSentMailLogLoading = true;
+            })
+            .addCase(getAllSentLogMailAsync.fulfilled, (state, action) => {
+                if (Array.isArray(action.payload)) {
+                    state.allSentLogList = action.payload;
+                } else {
+                    state.allSentLogList = [];
+                }
+                state.isSentMailLogLoading = false;
+            })
+            .addCase(getAllSentLogMailAsync.rejected, state => {
+                state.isSentMailLogLoading = false;
+            })
             .addCase(getAllSpamMailAsync.pending, state => {
                 state.isSpamLoading = true;
             })
@@ -438,12 +484,14 @@ export const selectAllMailLists = (state: RootState) => [
     ...(state.email.allReplyMailList ?? []),
     ...(state.email.allBounceMailList ?? []),
 
+
 ];
 export const selectAllMailInboxList = (state: RootState) => state.email.allInboxMailList;
 export const selectAllMailDraftList = (state: RootState) => state.email.allDraftMailList;
 export const selectAllMailSentList = (state: RootState) => state.email.allSentMailList;
 export const selectAllMailSpamList = (state: RootState) => state.email.allSpamMailList;
 export const selectAllMailList = (state: RootState) => state.email.allMailList;
+export const selectAllSentLogList = (state: RootState) => state.email.allSentLogList;
 
 export const selectInboxMailMessage = (state: RootState) => state.email.inboxMessage;
 export const selectInboxLoading = (state: RootState) => state.email.isInboxLoading;
