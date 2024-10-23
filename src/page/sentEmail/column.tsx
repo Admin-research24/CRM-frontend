@@ -1,10 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { RowType } from "../../constant";
-import { Contact } from "../../store/slices/contact";
 import { useState } from "react";
 import ComposeEmail from "../../components/common/ComposeEmail";
+import { Email } from "../../store/slices/email";
 
-export const getSentLogColumns = (handleRowSelect: (row: Contact) => void): ColumnDef<Contact, any>[] => [
+export const getSentLogColumns = (handleRowSelect: (row: Email) => void): ColumnDef<Email, any>[] => [
     {
         accessorKey: 'select',
         header: ({ table }) => {
@@ -33,11 +33,11 @@ export const getSentLogColumns = (handleRowSelect: (row: Contact) => void): Colu
         header: 'Sr No.',
         cell: ({ row }: { row: RowType }) => row.index + 1,
     },
-    {
-        accessorKey: "to",
-        header: "To",
+    // {
+    //     accessorKey: "to",
+    //     header: "To",
 
-    },
+    // },
     {
         accessorKey: "to",
         header: "TO",
@@ -88,36 +88,45 @@ export const getSentLogColumns = (handleRowSelect: (row: Contact) => void): Colu
         header: "Subject",
     },
     {
-        accessorKey: "updated_at",
+        accessorKey: "delivery_status[0].sent.value",
+        header: "Sent",
+        cell: ({ row }) => row.original.delivery_status[0]?.sent?.value || "0",
+      },
+      {
+        accessorKey: "delivery_status[0].sent.sentAt",
         header: "Sent At",
-    },
-    {
-        accessorKey: "open",
-        header: "Open ",
-    }, 
-    {
-        accessorKey: "opent_at",
-        header: "Open At",
-    },
-    {
-        accessorKey: "click",
+        cell: ({ row }) => row.original.delivery_status[0]?.sent?.sentAt ? new Date(row.original.delivery_status[0]?.sent?.sentAt).toLocaleString() : "N/A",
+      },
+      {
+        accessorKey: "delivery_status[0].opened.value",
+        header: "Opened",
+        cell: ({ row }) => row.original.delivery_status[0]?.opened?.value || "0",
+      },
+      {
+        accessorKey: "delivery_status[0].opened.openedAt",
+        header: "Opened At",
+        cell: ({ row }) => row.original.delivery_status[0]?.opened?.openedAt ? new Date(row.original.delivery_status[0]?.opened?.openedAt).toLocaleString() : "N/A",
+      },
+      {
+        accessorKey: "delivery_status[0].clicked.value",
         header: "Clicked",
-    },
-    {
-        accessorKey: "clicked_at",
-        header: "CLicked At",
-    },
-    {
-        accessorKey: "unsubscribe",
-        header: "Unsubscribe",
-    },
-    {
-        accessorKey: "Unsubscribe_At",
-        header: " Unsubscribe At",
-    },
-    {
-        accessorKey: "bounced",
-        header: "Bounced",
-    }
+        cell: ({ row }) => row.original.delivery_status[0]?.clicked?.value || "0",
+      },
+      {
+        accessorKey: "delivery_status[0].clicked.clickedAt",
+        header: "Clicked At",
+        cell: ({ row }) => row.original.delivery_status[0]?.clicked?.clickedAt ? new Date(row.original.delivery_status[0]?.clicked?.clickedAt).toLocaleString() : "N/A",
+      },
+      {
+        accessorKey: "delivery_status[0].unsubscribed.value",
+        header: "Unsubscribed",
+        cell: ({ row }) => row.original.delivery_status[0]?.unsubscribed?.value || "0",
+      },
+      {
+        accessorKey: "delivery_status[0].unsubscribed.unsubscribedAt",
+        header: "Unsubscribed At",
+        cell: ({ row }) => row.original.delivery_status[0]?.unsubscribed?.unsubscribedAt ? new Date(row.original.delivery_status[0]?.unsubscribed?.unsubscribedAt).toLocaleString() : "N/A",
+      },
+    
 
 ]

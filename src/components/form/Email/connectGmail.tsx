@@ -15,12 +15,12 @@ export default function ConnectGmail() {
     const [isContactsChecked, setIsContactsChecked] = useState(true);
     const [isCalendarChecked, setIsCalendarChecked] = useState(true);
     const navigate = useNavigate();
-
+    const Domain = import.meta.env.VITE_SERVER_DOMAIN;
     const cookies = document.cookie;
     const handleConnect = () => {
 
 
-        const response = window.open("http://localhost:5000/auth/google", "_self")
+        const response = window.open(`${Domain}/auth/google`, "_self")
         // dispatch(getConnectMailAsync());
 
         console.log(response)
