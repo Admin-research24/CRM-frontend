@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import ConnectGmail from "../../../components/form/Email/connectGmail";
 import ConnectOutLook from "../../../components/form/Email/connectOutLook";
 import ConnectOther from "../../../components/form/Email/connectOther";
-import { Email, getAllAutoReplyMailAsync, getAllBinMailAsync, getAllBounceMailAsync, getAllDraftMailAsync, getAllImportantMailAsync, getAllInboxMailAsync, getAllMailAsync, getAllReplyMailAsync, getAllSentMailAsync, getAllSpamMailAsync, getAllStarredMailAsync, getFetchEMailAsync } from "../../../store/slices/email";
+import { Email, getAllAutoReplyMailAsync, getAllBinMailAsync, getAllBounceMailAsync, getAllDraftMailAsync, getAllImportantMailAsync, getAllInboxMailAsync, getAllMailAsync, getAllReplyMailAsync, getAllSentMailAsync, getAllSpamMailAsync, getAllStarredMailAsync, getBinImapEMailAsync, getDraftImapEMailAsync, getFetchEMailAsync, getImportentImapEMailAsync, getSentImapEMailAsync, getSpamImapEMailAsync, getStarredImapEMailAsync } from "../../../store/slices/email";
 import { useAppDispatch, useAppSelector } from "../../../store/Hooks";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/ui/table";
 import { Badge } from "../../../components/ui/ui/badge";
@@ -25,6 +25,7 @@ import { AlertDialogHeader } from "../../../components/ui/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/ui/select";
 import { toast } from "react-toastify";
 import UpdateEmailTemplate from "../../../components/form/Email/updateEmailTemplate";
+import { get } from "http";
 
 interface MailContentProps {
     activeSection: string;
@@ -53,27 +54,35 @@ const MailContent: React.FC<MailContentProps> = ({ activeSection, mails, }) => {
         switch (activeSection) {
             case 'Inbox':
                 dispatch(getAllInboxMailAsync());
+                dispatch(getFetchEMailAsync())
                 break;
             case 'Drafts':
                 dispatch(getAllDraftMailAsync());
+                dispatch(getDraftImapEMailAsync());
                 break;
             case 'Sent':
                 dispatch(getAllSentMailAsync());
+                dispatch(getSentImapEMailAsync)
                 break;
             case 'Spam':
                 dispatch(getAllSpamMailAsync());
+                dispatch(getSpamImapEMailAsync());
                 break;
             case 'All Mail':
                 dispatch(getAllMailAsync());
+
                 break;
             case 'Trash':
                 dispatch(getAllBinMailAsync());
+                dispatch(getBinImapEMailAsync());
                 break;
             case 'Stared':
                 dispatch(getAllStarredMailAsync());
+                dispatch(getStarredImapEMailAsync());
                 break;
             case 'Important':
                 dispatch(getAllImportantMailAsync());
+                dispatch(getImportentImapEMailAsync());
                 break;
             case 'Email-Templates':
                 dispatch(GetAllEmailTemplateAsync());

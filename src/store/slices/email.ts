@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getAllAutoReplyMail, getAllBinMail, getAllBounceMail, getAllDraftMail, getAllImportantMail, getAllInboxMail, getAllMail, getAllReplyMail, getAllSentLogMail, getAllSentMail, getAllSpamMail, getAllStarredMail, getConnectMail, getFetchEMail, PostNewEmail } from "../api/email";
+import { getAllAutoReplyMail, getAllBinMail, getAllBounceMail, getAllDraftMail, getAllImportantMail, getAllInboxMail, getAllMail, getAllReplyMail, getAllSentLogMail, getAllSentMail, getAllSpamMail, getAllStarredMail, getBinFetchImapEMail, getConnectMail, getDraftFetchImapEMail, getFetchEMail, getImportentFetchImapEMail, getSentFetchImapEMail, getSpamFetchImapEMail, getStarredFetchImapEMail, PostNewEmail } from "../api/email";
 import { RootState } from "..";
 
 export interface Email {
@@ -26,22 +26,22 @@ export interface Email {
 }
 interface DeliveryStatus {
     sent: {
-      value: number | null;
-      sentAt: string | null;
+        value: number | null;
+        sentAt: string | null;
     };
     opened: {
-      value: number | null;
-      openedAt: string | null;
+        value: number | null;
+        openedAt: string | null;
     };
     clicked: {
-      value: number | null;
-      clickedAt: string | null;
+        value: number | null;
+        clickedAt: string | null;
     };
     unsubscribed: {
-      value: number | null;
-      unsubscribedAt: string | null;
+        value: number | null;
+        unsubscribedAt: string | null;
     };
-  }
+}
 export interface Draft {
     _id: string;
     user_id: string;
@@ -150,7 +150,7 @@ export interface EmailState {
     allAutoReplyMailList: Email[];
     allReplyMailList: Email[];
     allBounceMailList: Email[];
-    allSentLogList:Email[];
+    allSentLogList: Email[];
     totalInboxGiven: number;
     isInboxLoading: boolean;
     isDraftLoading: boolean;
@@ -160,13 +160,13 @@ export interface EmailState {
     isAllBinMailLoading: boolean;
     isAllStarredMailLoading: boolean;
     isAllImportantMailLoading: boolean;
-    isNewMailLoading:boolean;
-    isAutoReplyLoading:boolean;
-    isReplayLoading:boolean;
-    isBounceLoading:boolean;
-    isSentMailLogLoading:boolean;
+    isNewMailLoading: boolean;
+    isAutoReplyLoading: boolean;
+    isReplayLoading: boolean;
+    isBounceLoading: boolean;
+    isSentMailLogLoading: boolean;
     inboxMessage: string;
-    
+
 
 }
 
@@ -192,11 +192,11 @@ const initialState: EmailState = {
     isAllBinMailLoading: false,
     isAllStarredMailLoading: false,
     isAllImportantMailLoading: false,
-    isNewMailLoading:false,
-    isAutoReplyLoading:false,
-    isReplayLoading:false,
-    isBounceLoading:false,
-    isSentMailLogLoading:false,
+    isNewMailLoading: false,
+    isAutoReplyLoading: false,
+    isReplayLoading: false,
+    isBounceLoading: false,
+    isSentMailLogLoading: false,
     inboxMessage: '',
 }
 
@@ -208,13 +208,7 @@ export const getConnectMailAsync = createAsyncThunk(
         return res.data;
     },
 );
-export const getFetchEMailAsync = createAsyncThunk(
-    'mail/fetchMail',
-    async () => {
-        const res: any = await getFetchEMail();
-        return res.data;
-    },
-);
+
 
 export const PostNewEmailAsync = createAsyncThunk(
     'mail/newMail',
@@ -316,6 +310,58 @@ export const getAllAutoReplyMailAsync = createAsyncThunk(
     'mail/AutoreplyMail',
     async () => {
         const res: any = await getAllAutoReplyMail();
+        return res.data;
+    },
+);
+
+// IMAP 
+export const getFetchEMailAsync = createAsyncThunk(
+    'mail/fetchMail',
+    async () => {
+        const res: any = await getFetchEMail();
+        return res.data;
+    },
+);
+
+export const getSentImapEMailAsync = createAsyncThunk(
+    'mail/fetchMail',
+    async () => {
+        const res: any = await getSentFetchImapEMail();
+        return res.data;
+    },
+); 
+export const getSpamImapEMailAsync = createAsyncThunk(
+    'mail/fetchMail',
+    async () => {
+        const res: any = await getSpamFetchImapEMail();
+        return res.data;
+    },
+); 
+export const getDraftImapEMailAsync = createAsyncThunk(
+    'mail/fetchMail',
+    async () => {
+        const res: any = await getDraftFetchImapEMail();
+        return res.data;
+    },
+); 
+export const getBinImapEMailAsync = createAsyncThunk(
+    'mail/fetchMail',
+    async () => {
+        const res: any = await getBinFetchImapEMail();
+        return res.data;
+    },
+); 
+export const getStarredImapEMailAsync = createAsyncThunk(
+    'mail/fetchMail',
+    async () => {
+        const res: any = await getStarredFetchImapEMail();
+        return res.data;
+    },
+); 
+export const getImportentImapEMailAsync = createAsyncThunk(
+    'mail/fetchMail',
+    async () => {
+        const res: any = await getImportentFetchImapEMail();
         return res.data;
     },
 );
