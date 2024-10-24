@@ -29,6 +29,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useAppSelector } from "../../store/Hooks";
 import { GetAllEmailTemplateAsync, GetSingleEmailTemplateAsync } from "../../store/slices/eTemplate";
 import moment from "moment-timezone";
+import { toast } from "react-toastify";
 // import { PostNewEmailAsync } from "../../store/slices/email";
 
 interface ComposeEmailProps {
@@ -90,8 +91,8 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
     };
 
     const token = localStorage.getItem('cmsToken');
-    const bodyHtml = body.replace(/<\/?body>/g, "").trim(); // Remove any existing <body> or </body> tags from the content
-    const finalHtmlBody = `<body>\n${bodyHtml}\n</body>`; 
+    const bodyHtml = body.replace(/<\/?body>/g, "").trim();
+    const finalHtmlBody = `<body>\n${bodyHtml}\n</body>`;
     const handleSend = async () => {
         const formData = new FormData();
         formData.append("from", from);
@@ -109,13 +110,14 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
         formData.append("type", "email");
         formData.append("time_zone", selectedTimeZone);
 
-        console.log("Attached Files:", attachedFiles);
+        // console.log("Attached Files:", attachedFiles);
 
         attachedFiles.slice(0, 5).forEach((file) => {
             if (file instanceof File) {
                 formData.append("files", file);
             } else {
                 console.error("Item is not a valid File:", file);
+                toast.warning("Please select a valid file ");
             }
         });
 
@@ -131,6 +133,7 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
             );
 
             console.log("Response:", response.data);
+            toast.success("Email sent successfully");
             handleClose();
         } catch (error) {
             console.error("Error sending email:", error);
@@ -153,7 +156,7 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newFiles = Array.from(event.target.files || []);
         setAttachedFiles((prevFiles) => [...prevFiles, ...newFiles.slice(0, 5)]); // Limit to 5 attachments
-
+        toast.info("Please upload a maximum of 5 files");
         const newPreviews: (string | null)[] = [];
         newFiles.forEach(file => {
             const reader = new FileReader();
@@ -297,10 +300,10 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
         }
     };
     useEffect(() => {
-        if (open){
-          dispatch(GetAllEmailTemplateAsync());
+        if (open) {
+            dispatch(GetAllEmailTemplateAsync());
         }
-      }, [open ]);
+    }, [open]);
 
     useEffect(() => {
         if (templateId) {

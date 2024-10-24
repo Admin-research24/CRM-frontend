@@ -18,6 +18,7 @@ import FilterPage from "../../components/common/filterPage";
 import { debounce } from "@mui/material";
 import { getContactColumns } from "./column";
 import ComposeBulkEmail from "../../components/common/BulkComposeEmail";
+import { toast } from "react-toastify";
 
 export default function ContactPage() {
   const tableRef = useRef<null>(null);
@@ -33,18 +34,19 @@ export default function ContactPage() {
   const [isComposeOpen, setComposeOpen] = useState(false);
   const [selectedContacts, setSelectedContacts] = useState<{ id: string; email: string }[]>([]);
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
+  const [isSelectAllChecked, setSelectAllChecked] = useState(false); 
 
-  // Function to handle opening the compose with selected contacts
   const handleOpenComposeMultiple = () => {
     if (selectedContacts.length === 0) {
       console.log("No contacts selected");
+      toast.warning("Please select at least one contact");
       return;
     }
 
-    const emails = selectedContacts.map((contact) => contact.email); // Get an array of emails
-    setSelectedEmails(emails); // Set the emails to compose
-    console.log("Selected Emails:", emails); // Log the selected emails
-    setComposeOpen(true); // Open compose dialog
+    const emails = selectedContacts.map((contact) => contact.email); 
+    setSelectedEmails(emails); 
+    console.log("Selected Emails:", emails); 
+    setComposeOpen(true); 
   };
 
   const handleRowSelect = (row: Contact) => {
@@ -57,7 +59,15 @@ export default function ContactPage() {
       }
     });
   };
-  // Effect to manage checkbox selection inside the table
+  const handleSelectAll = (allContacts: Contact[]) => {
+    if (isSelectAllChecked) {
+      setSelectedContacts([]);
+    } else {
+      const allSelected = allContacts.map((contact) => ({ id: contact._id, email: contact.email }));
+      setSelectedContacts(allSelected);
+    }
+    setSelectAllChecked(!isSelectAllChecked);
+  };
 
 
 
@@ -84,7 +94,6 @@ export default function ContactPage() {
   };
 
 
-  // Filter the data based on the active tab and status
   const filteredContacts = contactList.filter((contact) => {
     if (activeTab === 'all') return true;
     if (activeTab === 'Qualified') return contact.status === 'Qualified';
@@ -92,7 +101,7 @@ export default function ContactPage() {
     if (activeTab === 'won') return contact.status === 'Won';
     return true;
   });
-  const contactColumn = getContactColumns(handleRowSelect);
+  const contactColumn = getContactColumns(handleRowSelect, handleSelectAll, selectedContacts);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">

@@ -19,29 +19,39 @@ import { Contact, deleteContactAsync } from "../../store/slices/contact";
 import ComposeEmail from "../../components/common/ComposeEmail";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const getContactColumns = (handleRowSelect: (row: Contact) => void): ColumnDef<Contact, any>[] => [
+export const getContactColumns = (
+  handleRowSelect: (row: Contact) => void,
+  handleSelectAll: (allContacts: Contact[]) => void,
+  selectedContacts: { id: string; email: string }[]
+): ColumnDef<Contact, any>[] => [
   {
     accessorKey: 'select',
     header: ({ table }) => {
-      const isAllSelected = table.getIsAllRowsSelected();
+      const allContacts = table.getCoreRowModel().rows.map((row) => row.original);
+      const isAllSelected = selectedContacts.length === allContacts.length && allContacts.length > 0;
+
       return (
         <input
           type="checkbox"
-          checked={isAllSelected}
-          onChange={table.getToggleAllRowsSelectedHandler()}
+          checked={isAllSelected} 
+          onChange={() => handleSelectAll(allContacts)} 
         />
       );
     },
-    cell: ({ row }) => (
-      <input
-        type="checkbox"
-        checked={row.getIsSelected()} // Check if row is selected
-        onChange={(event) => {
-          row.getToggleSelectedHandler()(event); // This should toggle selection properly
-          handleRowSelect(row.original); // Call the row select handler to update selectedContacts
-        }}
-      />
-    ),
+    cell: ({ row }) => {
+      const isRowSelected = selectedContacts.some((contact) => contact.id === row.original._id);
+
+      return (
+        <input
+          type="checkbox"
+          checked={isRowSelected}
+          onChange={(event) => {
+            row.getToggleSelectedHandler()(event); 
+            handleRowSelect(row.original); 
+          }}
+        />
+      );
+    },
   },
   {
     accessorKey: 'idx',
