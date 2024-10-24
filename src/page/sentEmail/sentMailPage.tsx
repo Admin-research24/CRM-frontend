@@ -6,6 +6,7 @@ import DataTable from "../../components/common/DataTable";
 import { getSentLogColumns } from "./column";
 import { useAppDispatch, useAppSelector } from "../../store/Hooks";
 import { Email, getAllSentLogMailAsync, selectAllSentLogList } from "../../store/slices/email";
+import { toast } from "react-toastify";
 
 export default function SentMailPage() {
     const [compact, setCompact] = useState(false);
@@ -44,8 +45,25 @@ export default function SentMailPage() {
     const sentLogColumn = getSentLogColumns(handleRowSelect);
 
     useEffect(() => {
-        dispatch(getAllSentLogMailAsync());
+        const fetchData = () => {
+
+            dispatch(getAllSentLogMailAsync());
+        }
+        fetchData();
+        const intervalId = setInterval(fetchData, 3000); // Fetch data every 5 seconds
+
+        return () => clearInterval(intervalId);
     }, [dispatch])
+
+    useEffect(() => {
+        if (sentMailList.length === 0) {
+            const toastInterval = setInterval(() => {
+                toast.warning("Please Login Again, Token expired");
+            }, 3000);
+    
+            return () => clearInterval(toastInterval);
+        }
+    }, [sentMailList])
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
