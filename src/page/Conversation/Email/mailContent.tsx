@@ -25,7 +25,6 @@ import { AlertDialogHeader } from "../../../components/ui/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/ui/select";
 import { toast } from "react-toastify";
 import UpdateEmailTemplate from "../../../components/form/Email/updateEmailTemplate";
-import { get } from "http";
 
 interface MailContentProps {
     activeSection: string;
