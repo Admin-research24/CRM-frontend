@@ -2,7 +2,7 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '..';
-import { createContact, deleteContact, getAllCOntact, getCrmHeaderFeild, importContactField, ImportContactFieldData, uploadExcelFile } from '../api/contactAPI';
+import { createContact, deleteContact, getAllCOntact, getCrmHeaderFeild, importContactField, ImportContactFieldData, updateContact, uploadExcelFile } from '../api/contactAPI';
 
 export interface Contact {
   first_name: string;
@@ -110,6 +110,13 @@ export const deleteContactAsync = createAsyncThunk(
     return res.data;
   },
 );
+export const updateContactAsync = createAsyncThunk(
+  'contact/updateContact',
+  async ({ form, Id }: { form: FormData, Id: string }) => {
+    const res: any = await updateContact( form, Id);
+    return res.data;
+  },
+);
 export const uploadExcelContactAsync = createAsyncThunk(
   'contact/uploadExcelContact',
   async (file: File) => {
@@ -190,7 +197,19 @@ const ContactSlice = createSlice({
       })
       .addCase(getCrmHeaderFieldListAsync.rejected, state => {
         state.isCrmFieldLoading = false;
-      });
+      })
+      .addCase(updateContactAsync.pending, state => {
+        state.isContactLoading = true;
+      })  
+      .addCase(updateContactAsync.fulfilled, (state, action) => {
+        state.allContactList = action.payload.contacts;
+        state.isContactLoading = false;
+      })
+      .addCase(updateContactAsync.rejected, state => {
+        state.isContactLoading = false;
+      })
+      
+
   },
 });
 

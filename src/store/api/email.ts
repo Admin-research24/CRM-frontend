@@ -41,6 +41,166 @@ export function getFetchEMail() {
     }
   });
 }
+export function getSentFetchImapEMail() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get(API_URL.GET_SENT_IMAP_EMAIL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      resolve({ data: response.data });
+    } catch (error: any) {
+      if (error.response) {
+        reject(error.response.data);
+      } else {
+        reject(error);
+      }
+    }
+  });
+}
+export function getSpamFetchImapEMail() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get(API_URL.GET_SPAM_IMAP_EMAIL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      resolve({ data: response.data });
+    } catch (error: any) {
+      if (error.response) {
+        reject(error.response.data);
+      } else {
+        reject(error);
+      }
+    }
+  });
+}
+export function getDraftFetchImapEMail() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get(API_URL.GET_DRAFT_IMAP_EMAIL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      resolve({ data: response.data });
+    } catch (error: any) {
+      if (error.response) {
+        reject(error.response.data);
+      } else {
+        reject(error);
+      }
+    }
+  });
+}
+export function getBinFetchImapEMail() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get(API_URL.GET_BIN_IMAP_EMAIL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      resolve({ data: response.data });
+    } catch (error: any) {
+      if (error.response) {
+        reject(error.response.data);
+      } else {
+        reject(error);
+      }
+    }
+  });
+}
+export function getStarredFetchImapEMail() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get(API_URL.GET_STARRED_IMAP_EMAIL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      resolve({ data: response.data });
+    } catch (error: any) {
+      if (error.response) {
+        reject(error.response.data);
+      } else {
+        reject(error);
+      }
+    }
+  });
+}
+export function getImportentFetchImapEMail() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get(API_URL.GET_IMPORTANT_IMAP_EMAIL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      resolve({ data: response.data });
+    } catch (error: any) {
+      if (error.response) {
+        reject(error.response.data);
+      } else {
+        reject(error);
+      }
+    }
+  });
+}
+export function getReplyFetchImapEMail() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get(API_URL.GET_REPLY_IMAP_EMAIL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      resolve({ data: response.data });
+    } catch (error: any) {
+      if (error.response) {
+        reject(error.response.data);
+      } else {
+        reject(error);
+      }
+    }
+  });
+}
+export function getBunceFetchImapEMail() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get(API_URL.GET_BOUNCE_IMAP_EMAIL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      resolve({ data: response.data });
+    } catch (error: any) {
+      if (error.response) {
+        reject(error.response.data);
+      } else {
+        reject(error);
+      }
+    }
+  });
+}
 
 // send Email
 export function PostNewEmail(form: FormData) {

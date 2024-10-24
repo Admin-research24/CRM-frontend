@@ -18,6 +18,8 @@ import FilterPage from "../../components/common/filterPage";
 import { debounce } from "@mui/material";
 import { getContactColumns } from "./column";
 import ComposeBulkEmail from "../../components/common/BulkComposeEmail";
+import { toast } from "react-toastify";
+import { ITEM_PER_PAGE } from "../../constant";
 
 export default function ContactPage() {
   const tableRef = useRef<null>(null);
@@ -25,26 +27,27 @@ export default function ContactPage() {
   const totalContacts = useAppSelector(selectTotalContact);
   const currentPage = useAppSelector(selectCurrentPage);
   const [compact, setCompact] = useState(false);
-  const [activeTab, setActiveTab] = useState('all'); // Default tab is 'all'
-  const itemsPerPage = 20; // This should match the limit in your API call
+  const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const dispatch = useAppDispatch();
   const [isComposeOpen, setComposeOpen] = useState(false);
   const [selectedContacts, setSelectedContacts] = useState<{ id: string; email: string }[]>([]);
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
+  const [isSelectAllChecked, setSelectAllChecked] = useState(false);
 
-  // Function to handle opening the compose with selected contacts
+
   const handleOpenComposeMultiple = () => {
     if (selectedContacts.length === 0) {
       console.log("No contacts selected");
+      toast.warning("Please select at least one contact");
       return;
     }
 
-    const emails = selectedContacts.map((contact) => contact.email); // Get an array of emails
-    setSelectedEmails(emails); // Set the emails to compose
-    console.log("Selected Emails:", emails); // Log the selected emails
-    setComposeOpen(true); // Open compose dialog
+    const emails = selectedContacts.map((contact) => contact.email);
+    setSelectedEmails(emails);
+    console.log("Selected Emails:", emails);
+    setComposeOpen(true);
   };
 
   const handleRowSelect = (row: Contact) => {
@@ -57,7 +60,15 @@ export default function ContactPage() {
       }
     });
   };
-  // Effect to manage checkbox selection inside the table
+  const handleSelectAll = (allContacts: Contact[]) => {
+    if (isSelectAllChecked) {
+      setSelectedContacts([]);
+    } else {
+      const allSelected = allContacts.map((contact) => ({ id: contact._id, email: contact.email }));
+      setSelectedContacts(allSelected);
+    }
+    setSelectAllChecked(!isSelectAllChecked);
+  };
 
 
 
@@ -76,15 +87,31 @@ export default function ContactPage() {
   }, [searchTerm, debouncedSearch]);
 
   useEffect(() => {
-    dispatch(getContactListAsync({ page: currentPage, limit: itemsPerPage, search: debouncedSearchTerm }));
-  }, [dispatch, currentPage, itemsPerPage, debouncedSearchTerm]);
+    const fetchData = () => {
 
+      dispatch(getContactListAsync({ page: currentPage, limit: ITEM_PER_PAGE, search: debouncedSearchTerm }));
+    }
+   
+    fetchData(); // Initial fetch
+    const intervalId = setInterval(fetchData, 3000); // Fetch data every 5 seconds
+
+    return () => clearInterval(intervalId);
+  }, [dispatch, currentPage, ITEM_PER_PAGE, debouncedSearchTerm]);
+
+  useEffect(() => {
+    if (contactList.length === 0) {
+        const toastInterval = setInterval(() => {
+            toast.warning("Please Login Again, Token expired");
+        }, 3000);
+
+        return () => clearInterval(toastInterval);
+    }
+}, [contactList]);
   const handlePageChange = (page: number) => {
-    dispatch(getContactListAsync({ page, limit: itemsPerPage, search: debouncedSearchTerm }));
+    dispatch(getContactListAsync({ page, limit: ITEM_PER_PAGE, search: debouncedSearchTerm }));
   };
 
 
-  // Filter the data based on the active tab and status
   const filteredContacts = contactList.filter((contact) => {
     if (activeTab === 'all') return true;
     if (activeTab === 'Qualified') return contact.status === 'Qualified';
@@ -92,8 +119,12 @@ export default function ContactPage() {
     if (activeTab === 'won') return contact.status === 'Won';
     return true;
   });
-  const contactColumn = getContactColumns(handleRowSelect);
+  const contactColumn = getContactColumns(handleRowSelect, handleSelectAll, selectedContacts);
+  const totalFilteredContacts = filteredContacts.length;
+  const totalProducts = filteredContacts.length > 0 ? totalContacts : totalFilteredContacts;
 
+
+  
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex items-center gap-16">
@@ -130,7 +161,7 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="bg-white p-6 rounded-lg shadow-md h-[37rem]  ">
         <Tabs defaultValue="all" onValueChange={setActiveTab}>
           <div className="flex items-center">
             <TabsList>
@@ -229,10 +260,13 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
-          <DataTable tableRef={tableRef} columns={contactColumn} data={filteredContacts} compact={compact} />
+          <div className="h-[28rem] overflow-scroll border rounded-lg">
+
+            <DataTable tableRef={tableRef} columns={contactColumn} data={filteredContacts} compact={compact} />
+          </div>
           <Pagination
             page={currentPage}
-            totalProducts={totalContacts}
+            totalProducts={totalProducts}
             handlePage={handlePageChange}
           />
         </Tabs>

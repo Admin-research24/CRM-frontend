@@ -15,28 +15,13 @@ import {
   SelectValue,
 } from '../../ui/ui/select';
 import { Input } from '../../ui/ui/input';
-import {  useEffect} from 'react';
-// import { useAppDispatch, useAppSelector } from '../../store/hook';
 import { zodResolver } from '@hookform/resolvers/zod';
-// import { UpdateOfferInput, updateOfferSchema } from '../../schema/OfferSchema';
-// import {
-//   Offer,
-//   getOfferListAsync,
-//   getOfferListCategoryAsync,
-//   selectOfferLoading,
-//   updateOfferAsync,
-// } from '../../store/slices/offers';
-// import { getAllBrandsAsync, selectBrandList } from '../../store/slices/brands';
-import { LoadingBtn } from '../../common/LoadingBtn';
+
 import { Button } from '../../ui/ui/button';
 import { UpdateContactInput, updateContactSchema } from '../../../schema/AddContactSchema';
-import { Contact, selectContactLoading } from '../../../store/slices/contact';
+import { Contact, selectContactLoading, updateContactAsync } from '../../../store/slices/contact';
 import { useAppDispatch, useAppSelector } from '../../../store/Hooks';
-// import {
-//   getAllCategoryAndSubcategoryAsync,
-//   getParentCategoriesAsync,
-//   selectCategoryAndParentCategory,
-// } from '../../store/slices/categories';
+
 
 interface IProps {
   contact: Contact;
@@ -44,12 +29,6 @@ interface IProps {
 
 export default function UpdateContactForm({ contact }: IProps) {
   const dispatch = useAppDispatch();
-//   const [imagePreview, setImagePreview] = useState<File | null>(null);
-//   const offercategoriesList = useAppSelector(
-//     state => state.offers.offerCategories,
-//   );
-//   const brandList = useAppSelector(selectBrandList);
-//   const categoryAndParentList = useAppSelector(selectCategoryAndParentCategory);
 
   const loading = useAppSelector(selectContactLoading);
 
@@ -57,14 +36,15 @@ export default function UpdateContactForm({ contact }: IProps) {
     first_name,
     last_name,
     email,
-job_title,
+    job_title,
     company_name,
     mobile_no,
-    owner,
+    // owner,
     status,
-  } =contact;
+  } = contact;
   const form = useForm<UpdateContactInput>({
     resolver: zodResolver(updateContactSchema),
+    mode: 'onChange',
     defaultValues: {
       first_name: first_name || '',
       last_name: last_name || '',
@@ -72,7 +52,7 @@ job_title,
       company_name: company_name || '',
       job_title: job_title || '',
       mobile: mobile_no || '',
-      sales_owner: owner || '',
+      // sales_owner: owner || '',
       status: status || '',
     },
   });
@@ -81,42 +61,25 @@ job_title,
     const formData = new FormData();
 
     formData.append('first_name', data.first_name);
-    // if (imagePreview) formData.append('image', imagePreview);
     formData.append('last_name', data.last_name);
     formData.append('email', data.email);
     formData.append('company_name', data.company_name);
     formData.append('job_title', data.job_title);
     formData.append('mobile_no', data.mobile);
-    formData.append('owner', data.sales_owner);
     formData.append('status', data.status);
 
+    try {
+        await dispatch(updateContactAsync({ form: formData, Id: contact._id }));
+        form.reset(); // Reset the form if needed
+        const closeModalButton = document.getElementById('close-modal');
+        if (closeModalButton) {
+            closeModalButton.click();
+        }
+    } catch (error) {
+        console.error('Error submitting form:', error);
+    }
+};
 
-    // dispatch(updateOfferAsync(formData)).then(() => {
-    //   const closeModalButton = document.getElementById('close-modal');
-    //   if (closeModalButton) {
-    //     closeModalButton.click();
-    //   }
-    //   dispatch(getContactListAsync());
-    // });
-  };
-
-//   const onImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-//     if (event.target.files && event.target.files[0]) {
-//       setImagePreview(event.target.files[0]);
-//     }
-//   };
-
-//   useEffect(() => {
-//     dispatch(getParentCategoriesAsync());
-//     dispatch(getAllCategoryAndSubcategoryAsync({}));
-//     // dispatch(Fetch(API_URL.GET_ALL_PARENT_CATEGORY));
-//     // dispatch(Fetch(API_URL.GET_ALL_CATEGORY_AND_SUBCATEGORY));
-//   }, [dispatch]);
-
-  useEffect(() => {
-    // dispatch(getAllBrandsAsync());
-    // dispatch(getOfferListCategoryAsync());
-  }, [dispatch]);
 
   return (
     <Form {...form}>
@@ -146,7 +109,7 @@ job_title,
             <FormItem>
               <FormLabel>Last Name</FormLabel>
               <FormControl>
-              <Input
+                <Input
                   className="ring-ring h-10 border border-input bg-background px-3 py-2 text-sm ring-offset-background file:bottom-0 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   {...field}
                   type="text"
@@ -157,40 +120,6 @@ job_title,
           )}
         />
 
-        <FormField
-          name="sales_owner"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Sales owner Name</FormLabel>
-              <FormControl>
-                <Select
-                  defaultValue={field.value}
-                //   onValueChange={category => field.onChange(category)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {/* {offercategoriesList.map(category => ( */}
-                      <SelectItem value="prateek"
-                    //   key={category._id} value={category._id}
-                      >
-                        Prateek
-                      </SelectItem>
-                      <SelectItem value="anurag"
-                    //   key={category._id} value={category._id}
-                      >
-                        anurag
-                      </SelectItem>
-                    {/* ))} */}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <FormField
           name="company_name"
@@ -201,14 +130,14 @@ job_title,
               <FormControl>
                 <Select
                   defaultValue={field.value}
-                //   onValueChange={category => field.onChange(category)}
+                  onValueChange={field.onChange}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select company " />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="tech solutions">Tech Solutions</SelectItem>
-                    
+
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -217,14 +146,14 @@ job_title,
           )}
         />
 
-<FormField
+        <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-              <Input
+                <Input
                   className="ring-ring h-10 border border-input bg-background px-3 py-2 text-sm ring-offset-background file:bottom-0 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   {...field}
                   type="text"
@@ -235,14 +164,14 @@ job_title,
           )}
         />
 
-<FormField
+        <FormField
           control={form.control}
           name="job_title"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Job Title</FormLabel>
               <FormControl>
-              <Input
+                <Input
                   className="ring-ring h-10 border border-input bg-background px-3 py-2 text-sm ring-offset-background file:bottom-0 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   {...field}
                   type="text"
@@ -259,11 +188,11 @@ job_title,
             <FormItem>
               <FormLabel>Mobile Number</FormLabel>
               <FormControl>
-              <Input
+                <Input
                   className="ring-ring h-10 border border-input bg-background px-3 py-2 text-sm ring-offset-background file:bottom-0 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   {...field}
-                  type="number"
-                  maxLength={10}
+                  type="tel"  // Change to 'tel' for phone number
+                  placeholder="Enter mobile number"
                 />
               </FormControl>
               <FormMessage />
@@ -275,18 +204,18 @@ job_title,
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Company Name</FormLabel>
+              <FormLabel>Status</FormLabel>
               <FormControl>
                 <Select
                   defaultValue={field.value}
-                //   onValueChange={category => field.onChange(category)}
+                  onValueChange={field.onChange}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="product">true</SelectItem>
-                    <SelectItem value="product">false</SelectItem>
+                    <SelectItem value="true">True</SelectItem>
+                    <SelectItem value="false">False</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -294,10 +223,42 @@ job_title,
             </FormItem>
           )}
         />
-        
+
         <div className="flex items-center gap-4 justify-between"></div>
 
-        {/* <FormField
+        <div className="flex gap-5">
+          <Button
+            className="bg-primary text-white"
+            disabled={loading } 
+            type="submit"
+          >
+            {loading ? 'Saving...' : 'Save'}
+          </Button>
+          <Button
+            className="bg-secondary-foreground text-white "
+            disabled={!form.formState.isValid}
+            // onClick={() =>
+            //   form.reset({
+            //     offerName: '',
+            //     offerDescription: '',
+            //     offerCategoryId: '',
+            //     offerTypeSelect: '',
+            //     offerType: '',
+
+            //     offerImage: new File([], ''),
+            //   })
+            // }
+            type="button"
+          >
+            Clear
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+}
+
+{/* <FormField
           name="offerImage"
           control={form.control}
           render={() => (
@@ -328,29 +289,3 @@ job_title,
             </FormItem>
           )}
         /> */}
-        <div className="flex gap-5">
-          <LoadingBtn isLoading={loading} value="Save" />
-
-          <Button
-            className="bg-secondary-foreground text-white "
-            disabled={!form.formState.isValid}
-            // onClick={() =>
-            //   form.reset({
-            //     offerName: '',
-            //     offerDescription: '',
-            //     offerCategoryId: '',
-            //     offerTypeSelect: '',
-            //     offerType: '',
-
-            //     offerImage: new File([], ''),
-            //   })
-            // }
-            type="button"
-          >
-            Clear
-          </Button>
-        </div>
-      </form>
-    </Form>
-  );
-}

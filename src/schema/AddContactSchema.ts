@@ -14,7 +14,7 @@ export const addContactSchema = z.object({
     .min(10)
     .max(14),
   // work_number: z.string(),
-  sales_owner: z.string({ required_error: "please select sales owner" }),
+  // sales_owner: z.string({ required_error: "please select sales owner" }),
   status: z.string({ required_error: "please select status" }),
 });
 
@@ -30,11 +30,9 @@ export const updateContactSchema = z.object({
   company_name: z.string({ required_error: "Please enter Your company name" }),
   job_title: z.string({ required_error: "Please enter Your job title" }),
   mobile: z
-    .string({ required_error: "Please enter Your mobile" })
-    .min(10)
-    .max(14),
+    .string({ required_error: "Please enter Your mobile" }),
   work_number: z.string(),
-  sales_owner: z.string({ required_error: "please select sales owner" }),
+  // sales_owner: z.string({ required_error: "please select sales owner" }),
   status: z.string({ required_error: "please select status" }),
 });
 

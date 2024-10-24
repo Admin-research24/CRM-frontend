@@ -23,6 +23,14 @@ export const API_URL = {
   // Email
   GET_CONNECT_MAIL: `${DOMAIN3}/auth/google`,
   GET_FETCH_EMAIL: `${DOMAIN2}/email/fetchEmail`,
+  GET_SENT_IMAP_EMAIL: `${DOMAIN2}/email/SentImap`,
+  GET_SPAM_IMAP_EMAIL:  `${DOMAIN2}/email/SpamImap`,
+  GET_DRAFT_IMAP_EMAIL: `${DOMAIN2}/email/DraftImap`,
+  GET_BIN_IMAP_EMAIL: `${DOMAIN2}/email/BinImap`,
+  GET_STARRED_IMAP_EMAIL: `${DOMAIN2}/email/StarredImap`,
+  GET_IMPORTANT_IMAP_EMAIL: `${DOMAIN2}/email/ImportantImap`,
+  GET_REPLY_IMAP_EMAIL: `${DOMAIN2}/email/ReplyImap`,
+  GET_BOUNCE_IMAP_EMAIL: `${DOMAIN2}/email/BounceImap`,
   // POST_SEND_EMAIL: `${DOMAIN2}/email/sendEmail`,
   // GET_CONNECT_MAIL: `${DOMAIN3}/auth/google/callback`,
   POST_NEW_EMAIL:`${DOMAIN2}/email/sendEmail`,
@@ -126,7 +134,7 @@ export const AdminSettingsLeftSideBar = [
   },
 ];
 
-export const ITEM_PER_PAGE = 10;
+export const ITEM_PER_PAGE = 50;
 
 export type RowType = {
   getIsSelected: () => boolean;

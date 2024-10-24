@@ -28,6 +28,7 @@ import { Button } from "../ui/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ui/select";
 import { useAppSelector } from "../../store/Hooks";
 import { GetAllEmailTemplateAsync, GetSingleEmailTemplateAsync } from "../../store/slices/eTemplate";
+import { toast } from "react-toastify";
 // import { PostNewEmailAsync } from "../../store/slices/email";
 
 interface ComposeEmailProps {
@@ -84,7 +85,7 @@ const ComposeEmail: React.FC<ComposeEmailProps> = ({
 
   const token = localStorage.getItem('cmsToken');
 
-  const bodyHtml = body.replace(/<\/?body>/g, "").trim(); // Remove any existing <body> or </body> tags from the content
+  const bodyHtml = body.replace(/<\/?body>/g, "").trim(); 
   const finalHtmlBody = `<body>\n${bodyHtml}\n</body>`;  
 axios.defaults.withCredentials = true;
 
@@ -115,6 +116,7 @@ const handleSend = async () => {
         formData.append("files", file);
       } else {
         console.error("Item is not a valid File:", file);
+        toast.warning("Please select a valid file");
       }
     });
   } else {
@@ -125,11 +127,11 @@ const handleSend = async () => {
     const response = await axios.post(API_URL.POST_NEW_EMAIL, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
-        // Note: You usually don't need to set 'Content-Type' when using FormData
       },
     });
 
     console.log("Response:", response.data);
+    toast.success("Email sent successfully");
     handleClose();
   } catch (error) {
     console.error("Error sending email:", error);
@@ -153,8 +155,8 @@ const handleSend = async () => {
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = Array.from(event.target.files || []);
-    setAttachedFiles((prevFiles) => [...prevFiles, ...newFiles.slice(0, 5)]); // Limit to 5 attachments
-
+    setAttachedFiles((prevFiles) => [...prevFiles, ...newFiles.slice(0, 5)]); 
+    toast.info("Please upload a maximum of 5 files");
     const newPreviews: (string | null)[] = [];
     newFiles.forEach(file => {
       const reader = new FileReader();
@@ -180,7 +182,6 @@ const handleSend = async () => {
       const quill = quillRef.current.getEditor();
       const cursorPosition = quill.getSelection()?.index || 0;
       const signatureHtml = signature;
-      // Insert the HTML content into the Quill editor at the cursor position
       quill.root.innerHTML = [
         quill.root.innerHTML.slice(0, cursorPosition),
         signatureHtml,

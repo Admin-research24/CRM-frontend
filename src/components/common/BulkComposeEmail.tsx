@@ -22,13 +22,18 @@ import {
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { API_URL, Formats, Modules } from "../../constant";
-import { Download } from "lucide-react";
+import { CalendarIcon, Download } from "lucide-react";
 import { useAppDispatch } from "../../store/Hooks";
 import { Button } from "../ui/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/ui/select";
 import { useAppSelector } from "../../store/Hooks";
 import { GetAllEmailTemplateAsync, GetSingleEmailTemplateAsync } from "../../store/slices/eTemplate";
 import moment from "moment-timezone";
+import { toast } from "react-toastify";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/ui/popover";
+import { Calendar } from "../ui/ui/calendar";
+import { Input } from "../ui/ui/input";
+import { format } from "date-fns";
 // import { PostNewEmailAsync } from "../../store/slices/email";
 
 interface ComposeEmailProps {
@@ -65,6 +70,8 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
     const [selectedTemplate, setSelectedTemplate] = useState("");
     const [templateId, setTemplateId] = useState('');
     const [selectedTimeZone, setSelectedTimeZone] = useState('');
+    const [date, setDate] = React.useState<Date | undefined>(new Date())
+    const [time, setTime] = useState("14:30");
 
     const dispatch = useAppDispatch();
     const emailTemplateList = useAppSelector((state) => state.emailTemplate.emailTemplates);
@@ -83,15 +90,15 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
         }
     }, [initialTo]);
     const timeZones = moment.tz.names();
-
     const handleTimeZoneChange = (value: string) => {
         setSelectedTimeZone(value);
         console.log('Selected Time Zone:', value);
     };
 
+    const DateTime = format(date!, 'yyyy-MM-dd') + " " + time;
     const token = localStorage.getItem('cmsToken');
-    const bodyHtml = body.replace(/<\/?body>/g, "").trim(); // Remove any existing <body> or </body> tags from the content
-    const finalHtmlBody = `<body>\n${bodyHtml}\n</body>`; 
+    const bodyHtml = body.replace(/<\/?body>/g, "").trim();
+    const finalHtmlBody = `<body>\n${bodyHtml}\n</body>`;
     const handleSend = async () => {
         const formData = new FormData();
         formData.append("from", from);
@@ -108,14 +115,16 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
         formData.append("job", "1");
         formData.append("type", "email");
         formData.append("time_zone", selectedTimeZone);
+        formData.append("dateTime", DateTime);
 
-        console.log("Attached Files:", attachedFiles);
+        // console.log("Attached Files:", attachedFiles);
 
         attachedFiles.slice(0, 5).forEach((file) => {
             if (file instanceof File) {
                 formData.append("files", file);
             } else {
                 console.error("Item is not a valid File:", file);
+                toast.warning("Please select a valid file ");
             }
         });
 
@@ -130,7 +139,13 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
                 }
             );
 
-            console.log("Response:", response.data);
+            // console.log("Response:", response.data);
+            if (response.status !== 200) {  
+
+            toast.success("Email sent successfully");
+            } else {
+                toast.info(`Bulk mail:${response.data}`);
+            }
             handleClose();
         } catch (error) {
             console.error("Error sending email:", error);
@@ -153,7 +168,7 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newFiles = Array.from(event.target.files || []);
         setAttachedFiles((prevFiles) => [...prevFiles, ...newFiles.slice(0, 5)]); // Limit to 5 attachments
-
+        toast.info("Please upload a maximum of 5 files");
         const newPreviews: (string | null)[] = [];
         newFiles.forEach(file => {
             const reader = new FileReader();
@@ -297,10 +312,10 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
         }
     };
     useEffect(() => {
-        if (open){
-          dispatch(GetAllEmailTemplateAsync());
+        if (open) {
+            dispatch(GetAllEmailTemplateAsync());
         }
-      }, [open ]);
+    }, [open]);
 
     useEffect(() => {
         if (templateId) {
@@ -440,7 +455,7 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
                     >
                         Insert Signature
                     </Button>
-                    <div className="w-80 " >
+                    <div className="w-80 mt-2 " >
                         <Select onValueChange={handleTemplateSelect}>
                             <SelectTrigger>
                                 <SelectValue placeholder={selectedTemplate || "Click to select"} />
@@ -455,6 +470,9 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
                         </Select>
                     </div>
 
+                </div>
+                <div className="flex gap-3">
+
                     <div className='w-48 relative z-0'>
                         <Select onValueChange={handleTimeZoneChange} >
                             <SelectTrigger>
@@ -468,6 +486,34 @@ const ComposeBulkEmail: React.FC<ComposeEmailProps> = ({
                                 ))}
                             </SelectContent>
                         </Select>
+                    </div>
+                    <div className="flex gap-3">
+                        <div>
+                            {/* <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="w-28" /> */}
+                            <Input
+                                type="time"
+                                value={time}
+                                onChange={(e) => setTime(e.target.value)}
+                                className="w-28"
+                            />
+                        </div>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {date ? format(date, 'PPP') : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 z-[60000]" align="end">
+
+                                <Calendar
+                                    mode="single"
+                                    selected={date}
+                                    onSelect={setDate}
+                                    className="rounded-md border"
+                                />
+                            </PopoverContent>
+                        </Popover>
                     </div>
                 </div>
 

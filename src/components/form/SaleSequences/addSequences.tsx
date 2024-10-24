@@ -21,7 +21,7 @@ import moment from 'moment-timezone';
 const AddSalesSequences = () => {
     const [selectedOption, setSelectedOption] = useState('contacts');
     const [sequenceType, setSequenceType] = useState('classic');
-    const [time, setTime] = useState('07:30');
+    const [time, setTime] = useState("14:30");
     const [addContacts, setAddContacts] = useState(false);
     const [excludeDuplicates, setExcludeDuplicates] = useState(true);
     const [removeAfterDays, setRemoveAfterDays] = useState<number>(21);

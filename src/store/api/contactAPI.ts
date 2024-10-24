@@ -54,6 +54,26 @@ export function getAllCOntact(page:number, limit:number, search:string) {
     });
   }
 
+  export function updateContact(form: FormData, Id: string) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await axios.post(API_URL.UPDATE_CONTACT_API(Id), form, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        resolve({ data: response.data });
+      } catch (error: any) {
+        if (error.response) {
+          reject(error.response.data);
+        } else {
+          reject(error);
+        }
+      }
+    });
+  }
+
   // DELETE CONTACT API
   
   export function deleteContact(Id: string) {
