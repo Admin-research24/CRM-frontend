@@ -68,18 +68,39 @@ export default function ProgressBar() {
   };
 
   // upload excel velodation
+  // const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  //   onDrop: (acceptedFiles) => {
+  //     if (acceptedFiles.length > 0) {
+  //       setFile(acceptedFiles[0]);
+  //       uploadFile(acceptedFiles[0]);
+  //     }
+  //   },
+  //   accept: {
+  //     'text/csv': ['.csv'],
+  //     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
+  //   },
+  //   maxSize: 10 * 1024 * 1024,  // 10 MB
+  // });
+  
+  const maxSize = 1 * 1024 * 1024 * 1024; // 1 GB limit
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
+
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
-        setFile(acceptedFiles[0]);
-        uploadFile(acceptedFiles[0]);
+        const file = acceptedFiles[0];
+        if (file.size > maxSize) {
+          alert("File size exceeds the 1 GB limit.");
+          return;
+        }
+        setFile(file);
+        uploadFile(file);
       }
     },
     accept: {
       'text/csv': ['.csv'],
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
     },
-    maxSize: 10 * 1024 * 1024,  // 10 MB
+    maxSize: maxSize,
   });
 
   // upload file logic
@@ -226,10 +247,11 @@ export default function ProgressBar() {
 
       };
 
-      await dispatch(importContactFieldAsync(data)).then(() => {
+        await dispatch(importContactFieldAsync(data)).then(() => {
         // toast.success("Contact Import Successfully");
         const svgElement = document.querySelector(".lucide-x");
         const closeModalButton = svgElement ? svgElement.closest('button') : null;
+        toast.success("contect submit successfully");
 
         if (closeModalButton) {
           closeModalButton.click();
@@ -237,10 +259,10 @@ export default function ProgressBar() {
           console.warn("Close button not found");
         }
 
-
         // navigate('/import-history', { state: { progressData: response } });
       });
-      toast.success("Contact Import Successfully");
+    
+     
 
       // console.log('Data submitted successfully!');
     } catch (error) {
