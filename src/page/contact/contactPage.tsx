@@ -87,9 +87,26 @@ export default function ContactPage() {
   }, [searchTerm, debouncedSearch]);
 
   useEffect(() => {
-    dispatch(getContactListAsync({ page: currentPage, limit: ITEM_PER_PAGE, search: debouncedSearchTerm }));
+    const fetchData = () => {
+
+      dispatch(getContactListAsync({ page: currentPage, limit: ITEM_PER_PAGE, search: debouncedSearchTerm }));
+    }
+   
+    fetchData(); // Initial fetch
+    const intervalId = setInterval(fetchData, 3000); // Fetch data every 5 seconds
+
+    return () => clearInterval(intervalId);
   }, [dispatch, currentPage, ITEM_PER_PAGE, debouncedSearchTerm]);
 
+  useEffect(() => {
+    if (contactList.length === 0) {
+        const toastInterval = setInterval(() => {
+            toast.warning("Please Login Again, Token expired");
+        }, 3000);
+
+        return () => clearInterval(toastInterval);
+    }
+}, [contactList]);
   const handlePageChange = (page: number) => {
     dispatch(getContactListAsync({ page, limit: ITEM_PER_PAGE, search: debouncedSearchTerm }));
   };
@@ -104,7 +121,10 @@ export default function ContactPage() {
   });
   const contactColumn = getContactColumns(handleRowSelect, handleSelectAll, selectedContacts);
   const totalFilteredContacts = filteredContacts.length;
+  const totalProducts = filteredContacts.length > 0 ? totalContacts : totalFilteredContacts;
 
+
+  
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex items-center gap-16">
@@ -242,11 +262,11 @@ export default function ContactPage() {
           </div>
           <div className="h-[28rem] overflow-scroll border rounded-lg">
 
-            <DataTable tableRef={tableRef} columns={contactColumn} data={filteredContacts} compact={compact}  />
+            <DataTable tableRef={tableRef} columns={contactColumn} data={filteredContacts} compact={compact} />
           </div>
           <Pagination
             page={currentPage}
-            totalProducts={ totalFilteredContacts}
+            totalProducts={totalProducts}
             handlePage={handlePageChange}
           />
         </Tabs>
