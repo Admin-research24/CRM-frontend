@@ -116,32 +116,13 @@ export const getContactColumns = (
       );
     },
   },
-  // {
-  //   accessorKey: "delivery_status_single_mail",
-  //   header: "Email Status",
-  //   cell: ({ row }) => {
-  //     const deliveryStatus = row.original.delivery_status_single_mail || [];
-
-  //     // Get the latest delivery status from the array (if there are multiple)
-  //     const latestStatus = deliveryStatus[deliveryStatus.length - 1]?.delivery_status[0];
-
-  //     return (
-  //       <div>
-  //         <div>Sent: {latestStatus?.sent.value || 0}</div>
-  //         <div>Opened: {latestStatus?.opened.value || 0}</div>
-  //         <div>Clicked: {latestStatus?.clicked.value || 0}</div>
-  //         <div>Unsubscribed: {latestStatus?.unsubscribed.value || 0}</div>
-  //       </div>
-  //     );
-  //   },
-  // },
   {
     accessorKey: "sent",
     header: "Sent",
     cell: ({ row }) => {
       const deliveryStatus = row.original.delivery_status_single_mail || [];
-      const latestStatus = deliveryStatus[deliveryStatus.length - 1]?.delivery_status[0];
-      return latestStatus?.sent.value || 0; // Return sent value
+      const latestStatus = deliveryStatus.length
+      return latestStatus
     },
   },
   {
@@ -235,44 +216,44 @@ export const getContactColumns = (
       return <p className={statusStyle}>{displayText}</p>;
     },
   },
-  {
-    accessorKey: '_id',
-    header: 'Action',
-    cell: ({ row }: { row: RowType }) => {
-      const dispatch = useAppDispatch();
+    {
+      accessorKey: '_id',
+      header: 'Action',
+      cell: ({ row }: { row: RowType }) => {
+        const dispatch = useAppDispatch();
 
 
-      const deleteOffer = (id: string) => {
-        dispatch(deleteContactAsync(id)).then(() => {
-          // dispatch(getContactListAsync({ page: 1, limit: 10 }));
-        });
-      };
+        const deleteOffer = (id: string) => {
+          dispatch(deleteContactAsync(id)).then(() => {
+            // dispatch(getContactListAsync({ page: 1, limit: 10 }));
+          });
+        };
 
 
 
-      return (
-        <div className="flex gap-2 items-center">
-          <Dialog
-          >
-            <DialogTrigger asChild>
-              <Button
-                disabled={row.original.isDeleted}
-                className="font-medium text-xs text-center py-0.5 px-2 inline-flex items-center rounded bg-transparent text-gray-900  hover:bg-transparent hover:scale-125 transition-all duration-500 ease-in-out disabled:opacity-30"
-              >
-                <EditNoteSharpIcon />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[80%] overflow-scroll">
-              <DialogHeader>
-                <DialogTitle>Edit Offer</DialogTitle>
-                <DialogDescription>
-                  Make changes to your Offer here. Click save when you're done.
-                </DialogDescription>
-              </DialogHeader>
+        return (
+          <div className="flex gap-2 items-center">
+            <Dialog
+            >
+              <DialogTrigger asChild>
+                <Button
+                  disabled={row.original.isDeleted}
+                  className="font-medium text-xs text-center py-0.5 px-2 inline-flex items-center rounded bg-transparent text-gray-900  hover:bg-transparent hover:scale-125 transition-all duration-500 ease-in-out disabled:opacity-30"
+                >
+                  <EditNoteSharpIcon />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[80%] overflow-scroll">
+                <DialogHeader>
+                  <DialogTitle>Edit Offer</DialogTitle>
+                  <DialogDescription>
+                    Make changes to your Offer here. Click save when you're done.
+                  </DialogDescription>
+                </DialogHeader>
 
-              <UpdateContactForm contact={row.original} />
-            </DialogContent>
-          </Dialog>
+                <UpdateContactForm contact={row.original} />
+              </DialogContent>
+            </Dialog>
 
           <AlertConfirmation
             title="Are you sure?"
@@ -296,3 +277,23 @@ export const getContactColumns = (
     },
   },
 ];
+
+    // {
+    //   accessorKey: "delivery_status_single_mail",
+    //   header: "Email Status",
+    //   cell: ({ row }) => {
+    //     const deliveryStatus = row.original.delivery_status_single_mail || [];
+  
+    //     // Get the latest delivery status from the array (if there are multiple)
+    //     const latestStatus = deliveryStatus[deliveryStatus.length - 1]?.delivery_status[0];
+  
+    //     return (
+    //       <div>
+    //         <div>Sent: {latestStatus?.sent.value || 0}</div>
+    //         <div>Opened: {latestStatus?.opened.value || 0}</div>
+    //         <div>Clicked: {latestStatus?.clicked.value || 0}</div>
+    //         <div>Unsubscribed: {latestStatus?.unsubscribed.value || 0}</div>
+    //       </div>
+    //     );
+    //   },
+    // },

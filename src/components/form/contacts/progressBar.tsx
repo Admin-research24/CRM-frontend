@@ -33,7 +33,7 @@ import { useDropzone } from "react-dropzone";
 import { Progress } from "../../ui/ui/progress";
 import { getCrmHeaderFieldListAsync, importContactFieldAsync, uploadExcelContactAsync } from "../../../store/slices/contact";
 import { useAppDispatch, useAppSelector } from "../../../store/Hooks";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const steps = [
@@ -57,7 +57,7 @@ export default function ProgressBar() {
   const [matchedFields, setMatchedFields] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const CrmFHeaderFeild = useAppSelector(state => state.contact.allCrmfieldList)
   // console.log(CrmFHeaderFeild)
@@ -96,11 +96,12 @@ export default function ProgressBar() {
       setResponseData(data);
       const newdata = response.data
       setResponseJson(newdata);
-
+      toast.success("File uploaded successfully");
       setUploadProgress(100);
     }
     catch (error) {
       console.error('Upload failed:', error);
+      toast.error(`File upload failed: ${error}`);
       setUploadProgress(0);
     } finally {
       setIsUploading(false);
@@ -219,14 +220,14 @@ export default function ProgressBar() {
       setIsSubmitting(true);
 
       const data = {
-        matchedFields, 
+        matchedFields,
         responseJson,
-        responseData: responseJson 
+        responseData: responseJson
 
       };
 
-      await dispatch(importContactFieldAsync(data)).then((response) => {
-        toast.success("Contact Import Successfully");
+      await dispatch(importContactFieldAsync(data)).then(() => {
+        // toast.success("Contact Import Successfully");
         const svgElement = document.querySelector(".lucide-x");
         const closeModalButton = svgElement ? svgElement.closest('button') : null;
 
@@ -236,13 +237,15 @@ export default function ProgressBar() {
           console.warn("Close button not found");
         }
 
-        navigate('/import-history', { state: { progressData: response } });
+
+        // navigate('/import-history', { state: { progressData: response } });
       });
       toast.success("Contact Import Successfully");
 
-      console.log('Data submitted successfully!');
+      // console.log('Data submitted successfully!');
     } catch (error) {
       console.error('Submission failed:', error);
+      toast.error(`Submission failed: ${error}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -604,7 +607,7 @@ export default function ProgressBar() {
         >
           {currentStep === 3 ? "Submit" : "Next"}
         </button>
-        {isSubmitting && <p>Loading...</p>} 
+        {isSubmitting && <p>Loading...</p>}
       </div>
     </div>
   );

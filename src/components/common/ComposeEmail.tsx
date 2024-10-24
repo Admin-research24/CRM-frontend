@@ -130,7 +130,7 @@ const handleSend = async () => {
       },
     });
 
-    // console.log("Response:", response.data);
+    console.log("Response:", response.data);
     toast.success("Email sent successfully");
     handleClose();
   } catch (error) {

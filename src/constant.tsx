@@ -126,7 +126,7 @@ export const AdminSettingsLeftSideBar = [
   },
 ];
 
-export const ITEM_PER_PAGE = 10;
+export const ITEM_PER_PAGE = 50;
 
 export type RowType = {
   getIsSelected: () => boolean;

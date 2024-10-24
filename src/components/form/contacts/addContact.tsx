@@ -41,7 +41,7 @@ export const AddContact = () => {
       job_title: "",
       mobile: "",
       // work_number: work_number.toString() || "",
-      sales_owner: "",
+      // sales_owner: "",
       status: "",
     },
   });
@@ -52,7 +52,7 @@ export const AddContact = () => {
     form.setValue("company_name", "");
     form.setValue("email", "");
     form.setValue("job_title", "");
-    form.setValue("sales_owner", "");
+    // form.setValue("sales_owner", "");
     form.setValue("mobile", "");
     form.setValue("status", "");
 
@@ -67,12 +67,12 @@ export const AddContact = () => {
     formData.append("job_title", data.job_title);
     formData.append("mobile_no", data.mobile);
     formData.append("email", data.email);
-    formData.append("owner", data.sales_owner);
+    // formData.append("owner", data.sales_owner);
     formData.append("status", data.status);
 
     dispatch(createContactAsync(formData)).then(() => {
-      const closeModalButton = document.getElementById("close-modal");
       toast.success("Contact added successfully");
+      const closeModalButton = document.getElementById("close-modal");
       if (closeModalButton) {
         closeModalButton.click();
       }
@@ -150,7 +150,7 @@ export const AddContact = () => {
                     <SelectValue placeholder="Select company " />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Tech Solutions">Tech Solutions</SelectItem>
+                    <SelectItem value="Tech Solution">Tech Solution</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -194,7 +194,7 @@ export const AddContact = () => {
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           name="sales_owner"
           control={form.control}
           render={({ field }) => (
@@ -217,7 +217,7 @@ export const AddContact = () => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <FormField
           name="status"
           control={form.control}

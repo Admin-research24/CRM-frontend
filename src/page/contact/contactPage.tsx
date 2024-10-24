@@ -19,6 +19,7 @@ import { debounce } from "@mui/material";
 import { getContactColumns } from "./column";
 import ComposeBulkEmail from "../../components/common/BulkComposeEmail";
 import { toast } from "react-toastify";
+import { ITEM_PER_PAGE } from "../../constant";
 
 export default function ContactPage() {
   const tableRef = useRef<null>(null);
@@ -26,15 +27,15 @@ export default function ContactPage() {
   const totalContacts = useAppSelector(selectTotalContact);
   const currentPage = useAppSelector(selectCurrentPage);
   const [compact, setCompact] = useState(false);
-  const [activeTab, setActiveTab] = useState('all'); // Default tab is 'all'
-  const itemsPerPage = 20; // This should match the limit in your API call
+  const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const dispatch = useAppDispatch();
   const [isComposeOpen, setComposeOpen] = useState(false);
   const [selectedContacts, setSelectedContacts] = useState<{ id: string; email: string }[]>([]);
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
-  const [isSelectAllChecked, setSelectAllChecked] = useState(false); 
+  const [isSelectAllChecked, setSelectAllChecked] = useState(false);
+
 
   const handleOpenComposeMultiple = () => {
     if (selectedContacts.length === 0) {
@@ -43,10 +44,10 @@ export default function ContactPage() {
       return;
     }
 
-    const emails = selectedContacts.map((contact) => contact.email); 
-    setSelectedEmails(emails); 
-    console.log("Selected Emails:", emails); 
-    setComposeOpen(true); 
+    const emails = selectedContacts.map((contact) => contact.email);
+    setSelectedEmails(emails);
+    console.log("Selected Emails:", emails);
+    setComposeOpen(true);
   };
 
   const handleRowSelect = (row: Contact) => {
@@ -86,11 +87,11 @@ export default function ContactPage() {
   }, [searchTerm, debouncedSearch]);
 
   useEffect(() => {
-    dispatch(getContactListAsync({ page: currentPage, limit: itemsPerPage, search: debouncedSearchTerm }));
-  }, [dispatch, currentPage, itemsPerPage, debouncedSearchTerm]);
+    dispatch(getContactListAsync({ page: currentPage, limit: ITEM_PER_PAGE, search: debouncedSearchTerm }));
+  }, [dispatch, currentPage, ITEM_PER_PAGE, debouncedSearchTerm]);
 
   const handlePageChange = (page: number) => {
-    dispatch(getContactListAsync({ page, limit: itemsPerPage, search: debouncedSearchTerm }));
+    dispatch(getContactListAsync({ page, limit: ITEM_PER_PAGE, search: debouncedSearchTerm }));
   };
 
 
@@ -102,6 +103,7 @@ export default function ContactPage() {
     return true;
   });
   const contactColumn = getContactColumns(handleRowSelect, handleSelectAll, selectedContacts);
+  const totalFilteredContacts = filteredContacts.length;
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -139,7 +141,7 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="bg-white p-6 rounded-lg shadow-md h-[37rem]  ">
         <Tabs defaultValue="all" onValueChange={setActiveTab}>
           <div className="flex items-center">
             <TabsList>
@@ -238,10 +240,13 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
-          <DataTable tableRef={tableRef} columns={contactColumn} data={filteredContacts} compact={compact} />
+          <div className="h-[28rem] overflow-scroll border rounded-lg">
+
+            <DataTable tableRef={tableRef} columns={contactColumn} data={filteredContacts} compact={compact}  />
+          </div>
           <Pagination
             page={currentPage}
-            totalProducts={totalContacts}
+            totalProducts={ totalFilteredContacts}
             handlePage={handlePageChange}
           />
         </Tabs>
